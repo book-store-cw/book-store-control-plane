@@ -14,6 +14,16 @@ jobs:
     steps:
     - name: CHECKOUT
       uses: actions/checkout@v2
+    - name: AZURE LOGIN
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZURE_CREDENTIALS}}
+    - name: Configure AKS
+      uses: azure/aks-set-context@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+        cluster-name: '${{ github.event.inputs.clusterName }}'
+        resource-group: ${{ secrets.CLUSTER_RESOURCE_GROUP }}
     - name: Cleaning up the cluster
       if: always()
       uses: azure/CLI@v1

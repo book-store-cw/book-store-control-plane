@@ -38,3 +38,5 @@ jobs:
         creds: '${{ secrets.AZURE_CREDENTIALS }}'
         cluster-name: '${{ github.event.inputs.clusterName }}'
         resource-group: ${{ secrets.CLUSTER_RESOURCE_GROUP }}
+
+
