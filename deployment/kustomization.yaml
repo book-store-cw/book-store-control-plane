@@ -1,0 +1,13 @@
+resources:
+  - catalog_service.yaml
+  - payment_service.yaml
+  - shipping_service.yaml
+  - ingress.yaml
+
+images:
+  - name: bookstorecw1/catalog-svc
+    newTag: v0.0.4
+  - name: bookstorecw1/shipping-service
+    newTag: v0.0.4
+  - name: bookstorecw1/payment-service
+    newTag: v0.0.4
