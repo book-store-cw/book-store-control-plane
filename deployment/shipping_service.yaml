@@ -1,0 +1,69 @@
+---
+apiVersion: "v1"
+kind: "Service"
+metadata:
+  labels:
+    app: "shipping_service"
+  name: "shipping-servic"
+spec:
+  ports:
+  - name: "port-1-shipping"
+    port: 9090
+    protocol: "TCP"
+    targetPort: 9090
+  selector:
+    app: "shipping_service"
+  type: "ClusterIP"
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  labels:
+    app: "shipping_service"
+  name: "shipping-servic-deployment"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "shipping_service"
+  template:
+    metadata:
+      labels:
+        app: "shipping_service"
+    spec:
+      containers:
+      - image: "bookstorecw1/shipping-service:latest"
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - "sleep"
+              - "15"
+        name: "shipping-servic-deployment"
+        ports:
+        - containerPort: 9090
+          name: "port-1-shipping"
+          protocol: "TCP"
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+          requests:
+            memory: "100Mi"
+            cpu: "200m"
+      nodeSelector: {}
+---
+apiVersion: "autoscaling/v1"
+kind: "HorizontalPodAutoscaler"
+metadata:
+  labels:
+    app: "shipping_service"
+  name: "shipping-servic"
+spec:
+  maxReplicas: 2
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: "apps/v1"
+    kind: "Deployment"
+    name: "shipping-servic-deployment"
+  targetCPUUtilizationPercentage: 50
