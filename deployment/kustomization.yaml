@@ -6,8 +6,8 @@ resources:
 
 images:
   - name: bookstorecw1/catalog-svc
-    newTag: v0.0.4
-  - name: bookstorecw1/shipping-service
-    newTag: v0.0.4
-  - name: bookstorecw1/payment-service
     newTag: v0.0.5
+  - name: bookstorecw1/shipping-service
+    newTag: v0.0.5
+  - name: bookstorecw1/payment-service
+    newTag: v0.0.7
