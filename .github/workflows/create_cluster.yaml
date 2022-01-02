@@ -5,7 +5,7 @@ on:
     inputs:
       clusterName:
         description: 'Cluster name'
-        default: 'bal-perf-cluster-test'
+        default: 'book-store-cluster'
         required: false
 jobs:
   setup:
