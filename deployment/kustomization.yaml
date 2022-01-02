@@ -4,6 +4,12 @@ resources:
   - shipping_service.yaml
   - ingress.yaml
 
+configMapGenerator:
+  - name: cm-payment-service
+    behavior: create
+    literals:
+      - SHIPPING_SERVICE_URL=https://shipping-servic-deployment
+
 images:
   - name: bookstorecw1/catalog-svc
     newTag: v0.0.5
