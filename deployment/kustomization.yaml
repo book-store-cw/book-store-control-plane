@@ -1,8 +1,8 @@
 resources:
+  - istio.yaml
   - catalog_service.yaml
   - payment_service.yaml
   - shipping_service.yaml
-  - ingress.yaml
 
 configMapGenerator:
   - name: cm-payment-service
@@ -12,7 +12,7 @@ configMapGenerator:
 
 images:
   - name: bookstorecw1/catalog-svc
-    newTag: v0.0.5
+    newTag: v0.0.7
   - name: bookstorecw1/shipping-service
     newTag: v0.0.5
   - name: bookstorecw1/payment-service
