@@ -40,6 +40,12 @@ spec:
               - "sleep"
               - "15"
         name: "payment-service-deployment"
+        env:
+          - name: SHIPPING_SERVICE_URL
+            valueFrom:
+              configMapKeyRef:
+                key: SHIPPING_SERVICE_URL
+                name: cm-payment-service
         ports:
         - containerPort: 9090
           name: "port-1-payment"
