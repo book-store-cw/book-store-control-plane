@@ -40,6 +40,17 @@ spec:
               - "sleep"
               - "15"
         name: "book-store-service-deployment"
+        env:
+          - name: PAYMENT_SERVICE_URL
+            valueFrom:
+              configMapKeyRef:
+                key: PAYMENT_SERVICE_URL
+                name: cm-book-store-service
+          - name: CATALOG_SERVICE_URL
+            valueFrom:
+              configMapKeyRef:
+                key: CATALOG_SERVICE_URL
+                name: cm-book-store-service
         ports:
         - containerPort: 9093
           name: "port-1-book-sto"
