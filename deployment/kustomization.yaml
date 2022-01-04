@@ -3,6 +3,7 @@ resources:
   - catalog_service.yaml
   - payment_service.yaml
   - shipping_service.yaml
+  - book_store_service.yaml
 
 configMapGenerator:
   - name: cm-payment-service
@@ -17,3 +18,5 @@ images:
     newTag: v0.0.5
   - name: bookstorecw1/payment-service
     newTag: v0.0.7
+  - name: bookstorecw1/book-store-service
+    newTag: v0.0.1
