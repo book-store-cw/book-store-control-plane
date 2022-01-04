@@ -29,6 +29,7 @@ jobs:
             --name "${{ github.event.inputs.clusterName }}" \
             --service-principal "${CLIENT_ID}"\
             --client-secret "${CLIENT_SECRET}" \
+            --node-vm-size "Standard_DS3_v2" \
             --node-count 1 \
             --location "eastus" \
             --generate-ssh-keys
