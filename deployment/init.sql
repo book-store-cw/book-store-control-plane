@@ -9,5 +9,5 @@ CREATE TABLE IF NOT EXISTS shipping (
   PRIMARY KEY (id)
 );
 
-INSERT INTO pet(`city`, `shippingPrice`)
+INSERT INTO shipping(`city`, `shippingPrice`)
 VALUES ('colombo', 200), ('kandy', 300), ('matara', 400);
