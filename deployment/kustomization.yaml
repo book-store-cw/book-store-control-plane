@@ -25,8 +25,8 @@ images:
   - name: bookstorecw1/catalog-svc
     newTag: v0.0.8
   - name: bookstorecw1/shipping-service
-    newTag: v0.0.5
+    newTag: v0.0.6
   - name: bookstorecw1/payment-service
-    newTag: v0.0.7
+    newTag: v0.0.9
   - name: bookstorecw1/book-store-service
     newTag: v0.0.1
