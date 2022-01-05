@@ -4,6 +4,7 @@ resources:
   - payment_service.yaml
   - shipping_service.yaml
   - book_store_service.yaml
+  - book_store_db.yaml
 
 configMapGenerator:
   - name: cm-payment-service
@@ -15,6 +16,10 @@ configMapGenerator:
     literals:
       - PAYMENT_SERVICE_URL=http://payment-service:9090
       - CATALOG_SERVICE_URL=http://cat-svc:3000
+  - name: cm-book-store-cb
+    behavior: create
+    literals:
+      - DB_SERVICE_URL=http://book-store-db-service:3306
 
 images:
   - name: bookstorecw1/catalog-svc

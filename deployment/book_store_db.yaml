@@ -1,0 +1,89 @@
+## init storage
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: init-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 50Mi
+---
+## book store storage
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: book-store-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 50Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: book-store-db-deployment
+spec:
+  selector:
+    matchLabels:
+      app: mysql8
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mysql8
+        logs: "true"
+    spec:
+      initContainers:
+        - name: db-populator
+          image: appropriate/curl
+          args:
+            - "-o"
+            - "/tmp/data/init.sql"
+            - "https://raw.githubusercontent.com/book-store-cw/book-store-control-plane/tree/master/deployment/init.sql"
+          volumeMounts:
+            - name: init-db
+              mountPath: /tmp/data
+      containers:
+        - name: mysql8
+          image: mysql:8.0.22
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: password
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql
+            - name: init-db
+              mountPath: /docker-entrypoint-initdb.d
+      volumes:
+        - name: init-db
+          persistentVolumeClaim:
+            claimName: init-pvc
+        - name: data
+          persistentVolumeClaim:
+            claimName: book-store-pvc
+---
+## Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: book-store-db-service
+  labels:
+    app: mysql8
+spec:
+  type: NodePort
+  ports:
+    - port: 3306
+      targetPort: 3306
+      protocol: TCP
+  selector:
+    app: mysql8
+---
