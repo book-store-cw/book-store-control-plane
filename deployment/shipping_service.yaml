@@ -41,11 +41,11 @@ spec:
               - "15"
         name: "shipping-servic-deployment"
         env:
-          - name: DB_SERVICE_URL
+          - name: DB_SERVICE
             valueFrom:
               configMapKeyRef:
-                key: DB_SERVICE_URL
-                name: cm-book-store-cb
+                key: DB_SERVICE
+                name: cm-book-store-db
         ports:
         - containerPort: 9090
           name: "port-1-shipping"
