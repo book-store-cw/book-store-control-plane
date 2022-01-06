@@ -29,6 +29,7 @@ jobs:
             --name "${{ github.event.inputs.clusterName }}" \
             --service-principal "${CLIENT_ID}"\
             --client-secret "${CLIENT_SECRET}" \
+            --node-vm-size "Standard_DS3_v2" \
             --node-count 1 \
             --location "eastus" \
             --generate-ssh-keys
@@ -38,25 +39,19 @@ jobs:
         creds: '${{ secrets.AZURE_CREDENTIALS }}'
         cluster-name: '${{ github.event.inputs.clusterName }}'
         resource-group: ${{ secrets.CLUSTER_RESOURCE_GROUP }}
-    - name: Deploy Niginx
+    - name: Deploy Istio
       run: |
-        # Create a namespace for your ingress resources
-        kubectl create namespace ingress-basic
-
-        # Add the ingress-nginx repository
-        helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-
-        # Use Helm to deploy an NGINX ingress controller
-        helm install nginx-ingress ingress-nginx/ingress-nginx \
-            --namespace ingress-basic \
-            --set controller.replicaCount=2 \
-            --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux \
-            --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux \
-            --set controller.admissionWebhooks.patch.nodeSelector."beta\.kubernetes\.io/os"=linux
-        # Wait for ingress ip
-        kubectl get service nginx-ingress-ingress-nginx-controller --namespace ingress-basic -w  \
-        -o 'go-template={{with .status.loadBalancer.ingress}}{{range .}}{{.ip}}{{"\n"}}{{end}}{{.err}}{{end}}' 2>/dev/null \
-        | head -n1
+        helm repo add istio https://istio-release.storage.googleapis.com/charts
+        helm repo update
+        kubectl label namespace default istio-injection=enabled
+        kubectl create namespace istio-system
+        helm install istio-base istio/base -n istio-system --wait
+        helm install istiod istio/istiod -n istio-system --wait
+        helm install istio-ingressgateway istio/gateway -n istio-system --wait
+        kubectl apply -f https://raw.githubusercontent.com/istio/istio/1.12.1/samples/addons/grafana.yaml
+        kubectl apply -f https://raw.githubusercontent.com/istio/istio/1.12.1/samples/addons/jaeger.yaml
+        kubectl apply -f https://raw.githubusercontent.com/istio/istio/1.12.1/samples/addons/kiali.yaml
+        kubectl apply -f https://raw.githubusercontent.com/istio/istio/1.12.1/samples/addons/prometheus.yaml
     - name: Wait till pods running
       run: sleep 60s
       shell: bash
@@ -69,6 +64,4 @@ jobs:
     - name: 'Deploy pods'
       run: |
           kubectl apply -f final.yaml
-          kubectl get service nginx-ingress-ingress-nginx-controller --namespace ingress-basic -w  \
-                                              -o 'go-template={{with .status.loadBalancer.ingress}}{{range .}}{{.ip}}{{"\n"}}{{end}}{{.err}}{{end}}' 2>/dev/null \
-                                              | head -n1
+          kubectl get svc istio-ingressgateway -n istio-system
