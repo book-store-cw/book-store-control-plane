@@ -46,7 +46,7 @@ spec:
           args:
             - "-o"
             - "/tmp/data/init.sql"
-            - "https://raw.githubusercontent.com/book-store-cw/book-store-control-plane/tree/master/deployment/init.sql"
+            - "https://raw.githubusercontent.com/book-store-cw/book-store-control-plane/master/deployment/init.sql"
           volumeMounts:
             - name: init-db
               mountPath: /tmp/data
