@@ -49,6 +49,7 @@ jobs:
         curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
     - name: 'Run Kustomize'
       run: |
+          sed -i 's/YOUR_PASSWORD/${{ secrets.MYSQL_PASSWORD }}/g' deployment/kustomization.yaml
           kustomize build deployment > final.yaml
     - name: 'Deploy pods'
       run: |
