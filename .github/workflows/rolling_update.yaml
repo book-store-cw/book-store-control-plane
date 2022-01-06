@@ -14,17 +14,43 @@ jobs:
     steps:
     - name: CHECKOUT
       uses: actions/checkout@v2
-    - name: Extract branch name
+    - name: Extract cluster name
       shell: bash
-      # run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       run: |
-        if [[ "${GITHUB_REF#refs/heads/}" = "master"  ]]
+        if [[ "${GITHUB_REF#refs/heads/}" = "dev"  ]]
         then
-          echo "In masterr"
-        elif [[ "${GITHUB_REF#refs/heads/}" = "dev"  ]]
+          echo "::set-output name=cluster-name::book-store-cluster-dev"
+        elif [[ "${GITHUB_REF#refs/heads/}" = "stage"  ]]
         then
-          echo "in devvv"
+          echo "::set-output name=cluster-name::book-store-cluster-stage"
+        elif [[ "${GITHUB_REF#refs/heads/}" = "prod"  ]]
+        then
+          echo "::set-output name=cluster-name::book-store-cluster-prod"
+        elif [[ "${GITHUB_REF#refs/heads/}" = "master"  ]]
+        then
+          echo "::set-output name=cluster-name::book-store-cluster"
         else
-          echo "in other thing"
+          echo "branch is not supported"
+          exit 1
         fi
-      id: extract_branch
+      id: cluster
+    - name: AZURE LOGIN
+      uses: azure/login@v1
+      with:
+        creds: ${{secrets.AZURE_CREDENTIALS}}
+    - name: Configure AKS
+      uses: azure/aks-set-context@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+        cluster-name: '${{steps.cluster.outputs.cluster-name}}'
+        resource-group: ${{ secrets.CLUSTER_RESOURCE_GROUP }}
+    - name: 'Install Kustomize'
+      run: |
+        curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+    - name: 'Run Kustomize'
+      run: |
+          kustomize build deployment > final.yaml
+    - name: 'Deploy pods'
+      run: |
+          kubectl apply -f final.yaml
+          kubectl get svc istio-ingressgateway -n istio-system
