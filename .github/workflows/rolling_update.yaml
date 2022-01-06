@@ -1,0 +1,30 @@
+name: Perform rolling update on cluster
+
+on:
+  workflow_dispatch:
+  push:
+      branches:
+          - 'dev'
+          - 'stage'
+          - 'prod'
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 600
+    steps:
+    - name: CHECKOUT
+      uses: actions/checkout@v2
+    - name: Extract branch name
+      shell: bash
+      # run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      run: |
+        if [[ "${GITHUB_REF#refs/heads/}" = "master"  ]]
+        then
+          echo "In masterr"
+        elif [[ "${GITHUB_REF#refs/heads/}" = "dev"  ]]
+        then
+          echo "in devvv"
+        else
+          echo "in other thing"
+        fi
+      id: extract_branch

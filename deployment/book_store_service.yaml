@@ -1,0 +1,80 @@
+---
+apiVersion: "v1"
+kind: "Service"
+metadata:
+  labels:
+    app: "book_store_service"
+  name: "book-store-service"
+spec:
+  ports:
+  - name: "port-1-book-sto"
+    port: 9093
+    protocol: "TCP"
+    targetPort: 9093
+  selector:
+    app: "book_store_service"
+  type: "ClusterIP"
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  labels:
+    app: "book_store_service"
+  name: "book-store-service-deployment"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "book_store_service"
+  template:
+    metadata:
+      labels:
+        app: "book_store_service"
+    spec:
+      containers:
+      - image: "bookstorecw1/book-store-service:latest"
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - "sleep"
+              - "15"
+        name: "book-store-service-deployment"
+        env:
+          - name: PAYMENT_SERVICE_URL
+            valueFrom:
+              configMapKeyRef:
+                key: PAYMENT_SERVICE_URL
+                name: cm-book-store-service
+          - name: CATALOG_SERVICE_URL
+            valueFrom:
+              configMapKeyRef:
+                key: CATALOG_SERVICE_URL
+                name: cm-book-store-service
+        ports:
+        - containerPort: 9093
+          name: "port-1-book-sto"
+          protocol: "TCP"
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+          requests:
+            memory: "100Mi"
+            cpu: "200m"
+      nodeSelector: {}
+---
+apiVersion: "autoscaling/v1"
+kind: "HorizontalPodAutoscaler"
+metadata:
+  labels:
+    app: "book_store_service"
+  name: "book-store-service"
+spec:
+  maxReplicas: 2
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: "apps/v1"
+    kind: "Deployment"
+    name: "book-store-service-deployment"
+  targetCPUUtilizationPercentage: 50
