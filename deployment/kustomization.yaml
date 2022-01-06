@@ -1,19 +1,32 @@
 resources:
+  - istio.yaml
   - catalog_service.yaml
   - payment_service.yaml
   - shipping_service.yaml
-  - ingress.yaml
+  - book_store_service.yaml
+  - book_store_db.yaml
 
 configMapGenerator:
   - name: cm-payment-service
     behavior: create
     literals:
-      - SHIPPING_SERVICE_URL=https://shipping-servic-deployment
+      - SHIPPING_SERVICE_URL=http://shipping-servic:9090
+  - name: cm-book-store-service
+    behavior: create
+    literals:
+      - PAYMENT_SERVICE_URL=http://payment-service:9090
+      - CATALOG_SERVICE_URL=http://cat-svc:3000
+  - name: cm-book-store-db
+    behavior: create
+    literals:
+      - DB_SERVICE=book-store-db-service
 
 images:
   - name: bookstorecw1/catalog-svc
-    newTag: v0.0.5
+    newTag: v0.0.8
   - name: bookstorecw1/shipping-service
-    newTag: v0.0.5
+    newTag: v0.0.8
   - name: bookstorecw1/payment-service
-    newTag: v0.0.7
+    newTag: v0.0.9
+  - name: bookstorecw1/book-store-service
+    newTag: v0.0.2
