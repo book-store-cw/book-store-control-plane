@@ -21,11 +21,16 @@ configMapGenerator:
     literals:
       - DB_SERVICE=book-store-db-service
 
+secretGenerator:
+- name: mysql-pass
+  literals:
+  - password=YOUR_PASSWORD
+
 images:
   - name: bookstorecw1/catalog-svc
     newTag: v0.0.8
   - name: bookstorecw1/shipping-service
-    newTag: v0.0.8
+    newTag: v0.0.9
   - name: bookstorecw1/payment-service
     newTag: v0.0.9
   - name: bookstorecw1/book-store-service

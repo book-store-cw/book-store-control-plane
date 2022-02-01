@@ -54,8 +54,11 @@ spec:
         - name: mysql8
           image: mysql:8.0.22
           env:
-            - name: MYSQL_ROOT_PASSWORD
-              value: password
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-pass
+                key: password
           ports:
             - containerPort: 3306
           volumeMounts:
@@ -79,7 +82,7 @@ metadata:
   labels:
     app: mysql8
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 3306
       targetPort: 3306

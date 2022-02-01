@@ -46,6 +46,11 @@ spec:
               configMapKeyRef:
                 key: DB_SERVICE
                 name: cm-book-store-db
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql-pass
+                key: password
         ports:
         - containerPort: 9090
           name: "port-1-shipping"
