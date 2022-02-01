@@ -28,7 +28,7 @@ secretGenerator:
 
 images:
   - name: bookstorecw1/catalog-svc
-    newTag: v0.0.8
+    newTag: v0.0.9
   - name: bookstorecw1/shipping-service
     newTag: v0.0.9
   - name: bookstorecw1/payment-service
